@@ -28,5 +28,24 @@ router.post('/weather', async (req, res) => {
   res.header('Content-Type', 'application/json');
   res.send(JSON.stringify(weatherData, null, 4));
 });
+router.post('/weatherMongo', async (req, res) => {
+  const { zipCode, tempMetric } = req.body;
+  let weather = new Weather();
+  let weatherData = await weather.getWeatherData(zipCode, tempMetric);
+
+  await weather.saveWeatherDataToMongo(zipCode, weatherData);
+  res.header('Content-Type', 'application/json');
+  res.send(JSON.stringify(weatherData, null, 4));
+});
+
+// GET Request - get the weather data saved from Mongo
+router.get('/weatherMongo', async (req, res) => {
+  const { zipCode } = req.query;
+  let weather = new Weather();
+
+  let weatherData = await weather.getWeatherDataFromMongo(zipCode);
+  res.header('Content-Type', 'application/json');
+  res.send(JSON.stringify(weatherData, null, 4));
+});
 
 module.exports = router;
